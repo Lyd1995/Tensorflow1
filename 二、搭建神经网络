@@ -159,6 +159,7 @@ tf.constant 直接给定值
 
 （二）前向传播----->搭建模型，实现推理
 
+1、概念
 前向传播----->搭建模型，实现推理
 前向传播实际上是根据输入计算输出的过程
 
@@ -179,4 +180,28 @@ tf.constant 直接给定值
 在实际的应用中，我们通常会一次喂入多组输入，让神经网络计算输出y
 这时，可以先用tf.placeholder来给输入占位
 一次喂入多组数据时，shape的第一维写None，表示空着，第二维写有几个输入特征
+
+2、TensorFlow描述：
+（1）定义输入和参数
+x=tf.placeholder(tf.float32,shape=(None,n))   ## n个特征
+w1=tf.Variable(tf.random_normal([n,m1],stddev=1,seed=1))
+w2=tf.Variable(tf.random_normal([m1,m2],stddev=1,seed=1))
+........................................
+
+（2）定义前向传播过程
+a1=tf.matmul(x,w1)
+a2=tf.matmul(a1,w2)
+................
+an=tf.matmul(an-1,wn-1)
+y=tf.matmul(an,wn)
+
+（3）用会话计算结果：
+with tf.Session() as sess:
+	init_op=tf.global_variables_initialier()
+	sess.run(init_op)
+
+（2）变量初始化：
+在sess.run函数中，使用tf.global_variables_initializer()汇总所有：有待优化的变量
+init_op=tf.global_variables_initializer()
+
 
