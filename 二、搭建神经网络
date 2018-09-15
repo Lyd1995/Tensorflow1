@@ -32,7 +32,7 @@ tf.float32    tf.int32
 
 2、计算图
 
-引例：
+（1）引例：
 以下代码描述的是一个计算过程，就是一张计算图
 import tensorflow as tf
 a=tf.constant([1.0,2.0])
@@ -46,8 +46,6 @@ Tensor("add:0", shape=(2,), dtype=float32)
 这里输出的是有关result的信息
 翻译：result是一个名为add:0的张量，维度为一，第一个维度里有2个元素，数据类型是float32型
 这里没有显示出计算结果
-
-
 
 "add:0"：
 add：节点名
@@ -63,5 +61,54 @@ dtype=float32
 dtype:数据类型
 
 
+（2）计算图与神经元
 计算图（Graph）：搭建神经网络的计算过程，只搭建，不运算（只显示计算过程，不进行计算）
 计算图描述的是一个神经网络的计算节点
+
+这个计算图描述了一个神经元
+import tensorflow as tf
+x=tf.constant([[1.0,2.0]])
+w=tf.constant([3.0],[4.0])
+
+y=tf.matmul(x,w)
+print y
+Tensor("MatMul:0", shape=(1, 1), dtype=float32)
+表示神经元：
+y=X*W=x1*w1+x2*w2(矩阵运算)
+
+注意：代码编写容易出错，首先X与W都应该是矩阵，也就是说这两个张量的阶是2，因此需要两个[]
+
+3、会话（session）
+会话：执行计算图中的节点运算
+
+（1）引例：
+import tensorflow as tf
+x=tf.constant([[1.0,2.0]])
+w=tf.constant([[3.0],[4.0]])
+
+y=tf.matmul(x,w)
+print y
+
+with tf.Session() as sess: ## 不加with也能运行
+	print sess.run(y)
+输出：
+Tensor("MatMul:0", shape=(1, 1), dtype=float32)
+2018-09-15 02:52:41.335496: I tensorflow/core/platform/cpu_feature_guard.cc:141] 
+Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+[[11.]]
+
+python中的with语句使用于对资源进行访问的场合，保证不管处理过程中是否发生错误或者异常都会执行规定的__exit__（“清理”）操作
+with语句的语法格式如下：
+with context_expression [as target(s)]:
+    with-body
+    
+注意：此时运行程序出现了警告，大意：你没有启动加速运算
+输入：
+ vim ~/.bashrc
+ 在里面最后一行加上：
+ export TF_CPP_MIN_LOG_LEVEL=2 //降低警告等价
+ 启动配置：
+ source ~/.bashrc
+
+
+
