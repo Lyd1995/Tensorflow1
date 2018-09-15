@@ -24,7 +24,7 @@ n-D           n         张量 tensor        t=[[[...(有n个中括号)
 
 判断张量的阶数，只要看它的括号有几个，n个括号，阶数为n
 
-（二）实际操作
+（二）基本操作
 
 1、数据类型
 tf.float32    tf.int32
@@ -97,11 +97,6 @@ Tensor("MatMul:0", shape=(1, 1), dtype=float32)
 Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
 [[11.]]
 
-python中的with语句使用于对资源进行访问的场合，保证不管处理过程中是否发生错误或者异常都会执行规定的__exit__（“清理”）操作
-with语句的语法格式如下：
-with context_expression [as target(s)]:
-    with-body
-    
 注意：此时运行程序出现了警告，大意：你没有启动加速运算
 输入：
  vim ~/.bashrc
@@ -109,6 +104,49 @@ with context_expression [as target(s)]:
  export TF_CPP_MIN_LOG_LEVEL=2 //降低警告等价
  启动配置：
  source ~/.bashrc
+ 
+ 
+    
+with语句执行的解析：
+　　with context_expr() as var:
+　　　　doSomething()
+当with语句执行时，便执行上下文表达式（context_expr）(一般为某个方法)来获得一个上下文管理器对象，
+上下文管理器的职责是提供一个上下文对象，用于在with语句块中处理细节
+
+一旦获得了上下文对象，就会调用它的__enter__()方法，将完成with语句块执行前的所有准备工作，
+如果with语句后面跟了as语句，则用__enter__()方法的返回值来赋值；
+
+当with语句块结束时，无论是正常结束，还是由于异常，都会调用上下文对象的__exit__()方法，__exit__()方法有3个参数，
+如果with语句正常结束，三个参数全部都是 None；
+如果发生异常，三个参数的值分别等于调用sys.exc_info()函数返回的三个值：类型（异常类）、值（异常实例）和跟踪记录（traceback），相应的跟踪记录对象。
+
+因为上下文管理器主要作用于共享资源，__enter__()和__exit__()方法基本是完成的是分配和释放资源的低层次工作
+比如：数据库连接、锁分配、信号量加/减、状态管理、文件打开/关闭、异常处理等。
 
 
 
+4、参数
+
+参数：即线上的权重W，用变量表示，随机赋予初值
+
+w=tf.Variable(tf.random_normal([2,3], stddev=2, mean=0, seed=1))
+tf.random_normal():正态分布，里面有四个参数
+参数[2,3]:产生2*3的矩阵
+参数stddev:设置标准差
+参数mean:设置平均值
+参数seed:s种子，不填写则采用当前时间
+
+其他随机值：
+tf.truncated_normal():去掉过大偏离点的正态分布
+tf.random_uniform():平均分布
+
+tf.zero 
+tf.one
+tf.fill  全部都为定值     tf.fill([2,3],6)  生成[[6,6,6],[6,6,6]]
+tf.constant 直接给定值
+
+二、搭建神经网络
+
+（一）神经网络的实现过程
+1、准备数据集，提取特征，作为输入喂给神经网络（NN）
+2、搭建NN结构，从输入到输出（先搭建计算图，再使用会话执行）
